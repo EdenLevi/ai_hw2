@@ -7,30 +7,16 @@ def smart_heuristic(env: WarehouseEnv, taxi_id: int):
     # heuristic=(manhatten(agent,package)+ manhatten(package,destination) + manhatten(destination,charger)  > battery)  ? manhatten(agent,charger) ∶ manhatten(agent,package)
     robo = env.get_robot(taxi_id)
 
-    #corner = (0, 0)
-    #agent_to_corner = manhattan_distance(robo.position, corner)
-    #return agent_to_corner
-
-
-
-    min_package_position = env.packages[0].position
-    if manhattan_distance(robo.position, env.packages[0].position) > manhattan_distance(robo.position, env.packages[1].position): min_package_distance = manhattan_distance(robo.position, env.packages[1].position)
-    package_position = [min(x) for manhattan_distance(x.position, robo.position) in env.packages]
-
     agent_to_package = manhattan_distance(robo.position, env.packages[0].position)
-    package_to_destination = manhattan_distance(env.packages[0].position, env.packages[0].destination)
-    destination_to_charger = min(manhattan_distance(env.packages[0].destination, env.charge_stations[0].position), manhattan_distance(env.packages[0].destination, env.charge_stations[1].position))
-    agent_to_charger = min(manhattan_distance(robo.position, env.charge_stations[0].position), manhattan_distance(robo.position, env.charge_stations[1].position))
     agent_to_destination = manhattan_distance(robo.position, env.packages[0].destination)
 
-    # all variables are valid, now need to use them ^
+    # missing some score for delivering the package that will make him do it
+
     if robo.package:
-        return 10 - agent_to_destination  # deliver package
+        return 11-agent_to_destination  # go to delivery destination / pick up package
     else:
-        if (agent_to_package + package_to_destination) > robo.battery:
-            return 10 - agent_to_charger  # go charge
-        else:
-            return 10 - agent_to_package  # get package
+        return -agent_to_package  # go to package position
+
 
 class AgentGreedyImproved(AgentGreedy):
     def heuristic(self, env: WarehouseEnv, robot_id: int):
